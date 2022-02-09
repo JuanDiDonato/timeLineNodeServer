@@ -1,24 +1,28 @@
 // controladores para la tabla post
 
-// conexion a DB
-const pool = require('../database/connection')
+// model
+const Post = require('../models/post')
 
 const post_controllers = {}
 
 // obtener post
 post_controllers.get_posts = async (req,res) => {
     const {username} = req.params
-    const posts = await pool.query('SELECT * FROM post WHERE user = ?',username)
+    const posts = await Post.find({username})
     res.status(200).json({posts})
 }
 
 // crear post
 post_controllers.new_post = async (req,res) => {
-    const {username} = req.user[0]
-    const {title, description} = req.body
-    const file = req.files
-    if(title && description){
-        await pool.query('INSERT INTO post SET ?', {'user':username,title,description,file})
+    const {username} = req.user
+    const {title, comment} = req.body
+    let file_names = []
+    const files = req.files
+    files.forEach(element => {
+        file_names.push(element.filename)
+    });
+    if(title && comment){
+        await Post.insertMany({username,title,comment,'file':file_names})
         res.status(201).json({error:false})
     }else{
         res.status(400).json({error:true,message:'Complete todos los datos'})
@@ -27,19 +31,17 @@ post_controllers.new_post = async (req,res) => {
 
 // edit post
 post_controllers.edit_post = async (req,res) => {
-    const {id} = req.user[0]
+    const {username} = req.user
     const {post} = req.params
-    const {title,description} = req.body
-    if(title === null || title === '' || description === null || description === ''){
+    const {title,comment} = req.body
+    if(title === null || title === '' || comment === null || comment === ''){
         res.status(400).json({error:true,message:'Complete todos los campos'})
     }else{
-        const posts = await pool.query('SELECT * FROM post WHERE user = ? AND id = ?', [id,post])
-        if(posts.length === 0) res.status(400).json({error:true,message:'No se puede editar este post.'})
+        const posts = await Post.findOne({'id':post,username})
+        if(!posts) res.status(400).json({error:true,message:'No se puede editar este post.'})
         else{
-            const obj = {title,description}
-            await pool.query('UPDATE post SET ? WHERE id = ? ', [obj, post])
-            res.status(200).json({error:false})
-            
+            const obj = {title,comment}
+            await Post.findOneAndUpdate({'id':post,username},obj).then(res.status(200).json({error:false}))
         }
     }
 
@@ -47,14 +49,9 @@ post_controllers.edit_post = async (req,res) => {
 
 // delete post
 post_controllers.delete_post = async (req,res) => {
-    const {id} = req.user[0]
+    const {username} = req.user
     const {post} = req.params
-    const posts = await pool.query('SELECT * FROM post WHERE user = ? AND id = ?', [id,post])
-    if(posts.length === 0) res.status(400).json({error:true,message:'No se puede borrar el post'})
-    else{
-        await pool.query('DELETE FROM post WHERE id = ?',post)
-        res.status(200).json({error:false})
-    }
+    await Post.findOneAndDelete({'id':post,username}).then(res.status(204).end())
 }
 
 module.exports = post_controllers

@@ -4,6 +4,15 @@ const express = require('express')
 const morgan = require('morgan')
 // cookie parser
 const cookieParser = require('cookie-parser')
+// Multer
+const multer = require('multer')
+
+const path = require('path')
+
+// mongoDB
+require('./database/mongoDB')
+
+
 
 
 
@@ -18,15 +27,28 @@ class Server{
         this.app.use(express.json())
         this.app.use(morgan('dev'))
         this.app.use(cookieParser())
+
+    }
+
+    Multer(){
+        const storage = multer.diskStorage({
+            destination: path.join(__dirname, 'public/files'),
+            filename: (req, file, cb) => {
+                cb(null, new Date().getTime() + path.extname(file.originalname));
+            }
+        });
+        this.app.use(multer({
+            storage,
+            fileFilter(req, file, cb) {
+                cb(null, true);
+            },
+        }).array("files"))
     }
 
     Routes(){
         this.app.use('/users',require('./routes/user'))
-        this.app.use('/storage',require('./routes/picture'))
-        this.app.use('/friends',require('./routes/friend'))
         this.app.use('/posts',require('./routes/post'))
     }
-
 
     Start(){
         this.app.listen(this.app.get('port'),()=>{
@@ -36,6 +58,7 @@ class Server{
 
     get init(){
         this.Middlewares()
+        this.Multer()
         this.Routes()
         this.Start()
     }

@@ -8,9 +8,8 @@ const JwtStrategy = require('passport-jwt').Strategy
 // bcrypt
 const bcrypt = require('./helpers/bcrypt')
 
-// conexion a la DB
-const pool = require('./database/connection')
-
+// model
+const User = require('./models/user')
 
 // get cookies
 const getCookie = req => {
@@ -27,11 +26,9 @@ passport.use(new LocalStrategy({
     passwordField : 'password',
 }, async (username, password, done) => {
     // Obtengo el usuario de la base de datos, si existe verifico las contraseñas y lo retorno
-    const row = await pool.query('SELECT * FROM users WHERE username = ?', username)
-
-    if(row.length === 0) return done(null,false)
+    const user = await User.findOne({username})
+    if(!user) return done(null,false)
     else{
-        const user = row[0]
         const userPassword = user.password
         const isValid = await bcrypt.MatchPassword(password,userPassword)
         if(isValid) return done(null,user)
@@ -44,10 +41,10 @@ passport.use(new LocalStrategy({
 passport.use(new JwtStrategy({
     jwtFromRequest: getCookie,
     secretOrKey: 'test',
-},(payload,done)=> {
-    pool.query('SELECT * FROM users WHERE id = ?', [payload.sub],(error,user) => {
+},async (payload,done)=> {
+    await User.findOne({'_id':[payload.sub]}).then((user, error) => {
         if(error) return done(error,false)
         if(user) return done(null,user)
-        return done(null,false)
-    }) 
+        else return done(null,false)
+    })
 }))

@@ -1,0 +1,15 @@
+// modelo de usuario en MongoDB
+
+const {Schema, model } = require('mongoose');
+const bcrypt = require('../helpers/bcrypt')
+
+const UserSchema= new Schema({
+    username: {type:String, required: true, unique: true},
+    password: {type:String, required: true},
+    photo: {type:String, required:false},
+    friends: {type:Array, required: false}
+},
+{timestamps:true});
+
+
+module.exports = model('User',UserSchema);
