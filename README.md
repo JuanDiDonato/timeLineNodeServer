@@ -14,4 +14,6 @@
  
  -4 start the server 
  
+    npm run dev
+ 
  -! remember to change the keys, the ones that appear by default are for testing and should not be used for a production environment 
