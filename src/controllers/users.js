@@ -50,15 +50,18 @@ user_controllers.login = async (req, res) => {
 user_controllers.add_friend = async (req,res)=>{
     const {username} = req.user
     const {friend} = req.body
-    let friends_list 
-    if(friend !== '' || friend !== null){
-        await User.findOne({username}).then( data => {
+    let friends_list
+    if(!friend){
+        res.status(400).json({error:true,message:'Este usuario no puede ser su amigo.'})
+    }else{
+        await User.findOne({username}).then(data => {
             friends_list = data.friends
         })
         if(friends_list.indexOf(friend) === -1){
             friends_list.push(friend)
             await User.findOneAndUpdate({username},{friends: friends_list}).then(
-            res.status(200).json({error:false}))
+                res.status(200).json({'error':false})
+            )
         }else{
             res.status(400).json({'error':true,message:'Este usuario ya esta en tu lista de amigos'})
         }
@@ -76,7 +79,7 @@ user_controllers.delete_friend = async (req,res) => {
         })
         let i = friends_list.indexOf(friend)
         if( i === -1){
-            res.status(400).json({'error':true,message:'Este usuario no es tu amigo'})
+            res.status(400).json({error:true,message:'Este usuario no es tu amigo'})
         }else{
             friends_list.splice(i,1)
             await User.findOneAndUpdate({username},{friends: friends_list}).then(
@@ -85,13 +88,34 @@ user_controllers.delete_friend = async (req,res) => {
     }
 }
 
+// datos del perfil
+user_controllers.set_perfil = async (req,res) => {
+    const {username} = req.user
+    const {description} = req.body
+    const files = req.files
+    let photo
+    if(!description){
+        res.status(400).json({error:true,message:'Complete todos los campos'})
+    }else{
+        photo = null
+        if(files){
+            photo = files[0].filename
+        }
+        await User.findOneAndUpdate({username},{description,photo}).then(
+            res.status(200).json({error:false})
+        )
+    }
+}
+
 // obtener usuario
 user_controllers.get_user = async (req,res) => {
-    const {username} = req.user
+    const {username} = req.params
     const data = await User.findOne({username})
     const user = {
         username : data.username,
-        friends : data.friends
+        friends : data.friends,
+        photo: data.photo,
+        description: data.description
     }
     res.status(200).json(user)
 }

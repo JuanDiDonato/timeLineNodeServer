@@ -7,6 +7,7 @@ const UserSchema= new Schema({
     username: {type:String, required: true, unique: true},
     password: {type:String, required: true},
     photo: {type:String, required:false},
+    description: {type:String, required:false},
     friends: {type:Array, required: false}
 },
 {timestamps:true});

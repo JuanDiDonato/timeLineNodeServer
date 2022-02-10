@@ -14,13 +14,10 @@ const router = Router()
 
 // obtener posts
 router.get('/posts/:username',get_posts)
-
 // crear post
 router.post('/post', passport.authenticate('jwt',{session:false}),new_post)
-
 // editar post
 router.put('/post/:post', passport.authenticate('jwt',{session:false}),edit_post)
-
 // borrar post
 router.delete('/post/:post', passport.authenticate('jwt',{session:false}),delete_post)
 

@@ -66,3 +66,5 @@ class Server{
 
 const server = new Server()
 server.init
+
+module.exports=server

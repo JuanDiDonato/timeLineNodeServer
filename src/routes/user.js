@@ -8,7 +8,7 @@ const passport = require('passport')
 require('../passport')
 
 // controllers
-const {register,login,add_friend,get_user,delete_friend} = require('../controllers/users')
+const {register,login,add_friend,get_user,delete_friend,set_perfil} = require('../controllers/users')
 
 const router = Router()
 
@@ -18,10 +18,12 @@ router.post('/register',register)
 router.post('/login', passport.authenticate('local',{session:false}),login)
 // añadir amigo
 router.post('/friends',passport.authenticate('jwt',{session:false}),add_friend)
-// obtener usuario
-router.get('/user',passport.authenticate('jwt',{session:false}),get_user)
 // borrar amigos
 router.delete('/friend/:friend',passport.authenticate('jwt',{session:false}),delete_friend)
+// datos del perfil
+router.post('/perfil',passport.authenticate('jwt',{session:false}),set_perfil)
+// obtener usuario
+router.get('/user/:username',passport.authenticate('jwt',{session:false}),get_user)
 
 
 module.exports = router
