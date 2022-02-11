@@ -1,13 +1,12 @@
 // controladores para la tabla users
 
-// models
-const User = require('../models/user')
-
 // jwt
 const jwt = require('jsonwebtoken')
-
 // bcrypt
 const bcrypt = require('../helpers/bcrypt')
+// models
+const User = require('../models/user')
+const Post = require('../models/post')
 
 const user_controllers = {}
 
@@ -63,7 +62,7 @@ user_controllers.add_friend = async (req,res)=>{
                 res.status(200).json({'error':false})
             )
         }else{
-            res.status(400).json({'error':true,message:'Este usuario ya esta en tu lista de amigos'})
+            res.status(400).json({'error':true,message:'Este usuario ya esta en tu lista de amigos.'})
         }
     }
 }
@@ -79,7 +78,7 @@ user_controllers.delete_friend = async (req,res) => {
         })
         let i = friends_list.indexOf(friend)
         if( i === -1){
-            res.status(400).json({error:true,message:'Este usuario no es tu amigo'})
+            res.status(400).json({error:true,message:'Este usuario no es tu amigo.'})
         }else{
             friends_list.splice(i,1)
             await User.findOneAndUpdate({username},{friends: friends_list}).then(
@@ -95,7 +94,7 @@ user_controllers.set_perfil = async (req,res) => {
     const files = req.files
     let photo
     if(!description){
-        res.status(400).json({error:true,message:'Complete todos los campos'})
+        res.status(400).json({error:true,message:'Complete todos los campos.'})
     }else{
         photo = null
         if(files){
@@ -110,14 +109,16 @@ user_controllers.set_perfil = async (req,res) => {
 // obtener usuario
 user_controllers.get_user = async (req,res) => {
     const {username} = req.params
-    const data = await User.findOne({username})
-    const user = {
-        username : data.username,
-        friends : data.friends,
-        photo: data.photo,
-        description: data.description
+    const userData = await User.findOne({username})
+    const postsData = await Post.find({username})
+    const perfil = {
+        username : userData.username,
+        friends : userData.friends,
+        photo: userData.photo,
+        description: userData.description,
+        posts : postsData
     }
-    res.status(200).json(user)
+    res.status(200).json(perfil)
 }
 
 module.exports = user_controllers

@@ -23,7 +23,7 @@ router.delete('/friend/:friend',passport.authenticate('jwt',{session:false}),del
 // datos del perfil
 router.post('/perfil',passport.authenticate('jwt',{session:false}),set_perfil)
 // obtener usuario
-router.get('/user/:username',passport.authenticate('jwt',{session:false}),get_user)
+router.get('/perfil/:username',passport.authenticate('jwt',{session:false}),get_user)
 
 
 module.exports = router
