@@ -40,8 +40,12 @@ user_controllers.login = async (req, res) => {
     if(req.isAuthenticated()){
         const {id,username} = req.user
         let token = user_controllers.signToken(id)
+        const user = {
+            'id': id,
+            'username': username
+        }
         res.cookie('access_token', token, {httpOnly : true, sameSite : true})
-        res.status(200).json({error:false,message:'Inicio sesion como '+username})
+        res.status(200).json({error:false,message:'Inicio sesion como '+username, user })
     }
 }
 
@@ -111,14 +115,19 @@ user_controllers.get_user = async (req,res) => {
     const {username} = req.params
     const userData = await User.findOne({username})
     const postsData = await Post.find({username})
-    const perfil = {
-        username : userData.username,
-        friends : userData.friends,
-        photo: userData.photo,
-        description: userData.description,
-        posts : postsData
+    if(userData){
+        const perfil = {
+            username : userData.username,
+            friends : userData.friends,
+            photo: userData.photo,
+            description: userData.description,
+            posts : postsData
+        }
+        res.status(200).json({error:false,perfil})
+    }else{
+        res.status(400).json({error:true,message:'Ocurrio un error al cargar el perfil.'})
     }
-    res.status(200).json(perfil)
+
 }
 
 module.exports = user_controllers

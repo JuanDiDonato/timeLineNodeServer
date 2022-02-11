@@ -202,6 +202,18 @@ describe('POST GET /perfil', () => {
         });
     })),
 
+    it('Responde con estado 400 cuando el usuario no existe', (done => {
+        request
+        .get('/users/perfil/usuario_que_no_existe')
+        .set('Accept', 'application/json')
+        .expect({error:true,message:'Ocurrio un error al cargar el perfil.'})
+        .expect(400)
+        .end(err => {
+            if (err) return done(err);
+            done();
+        });
+    }))
+
     it('Responde con estado 200 y los datos existentes del usuario', (done => {
         request
         .get('/users/perfil/test')
