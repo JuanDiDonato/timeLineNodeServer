@@ -130,4 +130,15 @@ user_controllers.get_user = async (req,res) => {
 
 }
 
+// verifica al usuario logueado
+user_controllers.isAuthenticated = (req,res) => {
+    if(req.user){
+        const {username,id} = req.user
+        res.status(200).json({username,id,'isAuth':true})
+    }else{
+        res.status(204).end()
+    }
+
+}
+
 module.exports = user_controllers
