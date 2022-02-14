@@ -96,11 +96,10 @@ user_controllers.set_perfil = async (req,res) => {
     const {username} = req.user
     const {description} = req.body
     const files = req.files
-    let photo
     if(!description){
         res.status(400).json({error:true,message:'Complete todos los campos.'})
     }else{
-        photo = null
+        let photo = null
         if(files){
             photo = files[0].filename
         }
@@ -133,8 +132,8 @@ user_controllers.get_user = async (req,res) => {
 // verifica al usuario logueado
 user_controllers.isAuthenticated = (req,res) => {
     if(req.user){
-        const {username,id} = req.user
-        res.status(200).json({username,id,'isAuth':true})
+        const {username,id,friends} = req.user
+        res.status(200).json({username,id,friends,'isAuth':true})
     }else{
         res.status(204).end()
     }
