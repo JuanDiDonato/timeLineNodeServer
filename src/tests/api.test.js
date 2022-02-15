@@ -224,6 +224,29 @@ describe('POST GET /perfil', () => {
             if (err) return done(err);
             done();
         });
+    })),
+
+    it('Responde con estado 200 y el usuario logueado', (done => {
+        request
+        .get('/users/user/isAuthenticate')
+        .set('Accept', 'application/json')
+        .expect((res) => { res.body })
+        .expect(200)
+        .end(err => {
+            if (err) return done(err);
+            done();
+        });
+    }))
+
+    it('Responde con estado 204 si no hay un usuario logeuado', (done => {
+        request
+        .get('/users/user/isAuthenticate')
+        .set('Accept', 'application/json')
+        .expect(204)
+        .end(err => {
+            if (err) return done(err);
+            done();
+        });
     }))
 
 });
