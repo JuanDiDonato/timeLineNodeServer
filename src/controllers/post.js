@@ -57,8 +57,11 @@ post_controllers.delete_post = async (req,res) => {
     const {username} = req.user
     const {post} = req.params
     const postToDelete = await Post.findOneAndDelete({'_id':post,username})
-    if(postToDelete) res.status(204).end()
-    res.status(403).json({error:true,message:'No se puede borrar este post.'})
+    if(postToDelete){
+       res.status(204).end()
+    }
+    else res.status(403).json({error:true,message:'No se puede borrar este post.'})
+    
 }
 
 module.exports = post_controllers
