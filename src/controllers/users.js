@@ -8,6 +8,7 @@ const bcrypt = require('../helpers/bcrypt')
 const User = require('../models/user')
 const Post = require('../models/post')
 
+
 const user_controllers = {}
 
 user_controllers.signToken = id => {
@@ -107,6 +108,16 @@ user_controllers.set_perfil = async (req,res) => {
             res.status(200).json({error:false})
         )
     }
+}
+
+// obtener usuarios registrados
+user_controllers.get_users = async (req,res) => {
+    let users_usernames = []
+    const users = await User.find()
+    for(let user in users){
+        users_usernames.push(users[user].username)
+    }
+    res.status(200).json({users_usernames})
 }
 
 // obtener usuario

@@ -8,7 +8,7 @@ const passport = require('passport')
 require('../passport')
 
 // controllers
-const {register,login,add_friend,get_user,delete_friend,set_perfil,isAuthenticated} = require('../controllers/users')
+const {register,login,add_friend,get_user,delete_friend,set_perfil,isAuthenticated, get_users} = require('../controllers/users')
 
 const router = Router()
 
@@ -24,6 +24,8 @@ router.delete('/friend/:friend',passport.authenticate('jwt',{session:false}),del
 router.post('/perfil',passport.authenticate('jwt',{session:false}),set_perfil)
 // obtener usuario
 router.get('/perfil/:username',passport.authenticate('jwt',{session:false}),get_user)
+//obtener todos los usuarios
+router.get('/users',passport.authenticate('jwt',{session:false}),get_users)
 // verificar usuario
 router.get('/user/isAuthenticate', passport.authenticate('jwt',{session:false}),isAuthenticated)
 
