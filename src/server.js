@@ -12,10 +12,6 @@ const path = require('path')
 // mongoDB
 require('./database/mongoDB')
 
-
-
-
-
 // clase server
 class Server{
     constructor(){
@@ -23,7 +19,7 @@ class Server{
     }
 
     Middlewares(){
-        this.app.set('port',5000)
+        this.app.set('port',8080)
         this.app.use(express.json())
         this.app.use(morgan('dev'))
         this.app.use(cookieParser())
