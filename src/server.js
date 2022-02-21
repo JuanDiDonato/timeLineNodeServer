@@ -44,6 +44,7 @@ class Server{
     Routes(){
         this.app.use('/users',require('./routes/user'))
         this.app.use('/posts',require('./routes/post'))
+        this.app.use(express.static(path.join(__dirname, 'public')))
     }
 
     Start(){
