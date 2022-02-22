@@ -117,7 +117,7 @@ user_controllers.get_users = async (req,res) => {
     for(let user in users){
         users_usernames.push(users[user].username)
     }
-    res.status(200).json({users_usernames})
+    res.status(200).json(users_usernames)
 }
 
 // obtener usuario
@@ -150,5 +150,13 @@ user_controllers.isAuthenticated = (req,res) => {
     }
 
 }
+
+// logout
+user_controllers.logout = (req, res) => {
+    res.clearCookie('access_token');
+    res.status(200).json(
+        { user: {username: '', password: '', description: '', photo: ''}, 
+        error: false });
+};
 
 module.exports = user_controllers

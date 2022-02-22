@@ -261,6 +261,18 @@ describe('POST GET /perfil', () => {
         });
     }))
 
+    it('Responde con estado 200 y un objeto user', (done => {
+        request
+        .get('/users/user/logout')
+        .set('Accept', 'application/json')
+        .expect(200)
+        .expect((res) => { res.body })
+        .end(err => {
+            if (err) return done(err);
+            done();
+        });
+    }))
+
 });
 
 describe('GET /posts', () => {
