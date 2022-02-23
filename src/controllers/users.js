@@ -58,12 +58,12 @@ user_controllers.add_friend = async (req,res)=>{
     if(!friend){
         res.status(400).json({error:true,message:'Este usuario no puede ser su amigo.'})
     }else{
-        await User.findOne({username}).then(data => {
+        await User.findOne({username:friend}).then(data => {
             friends_list = data.friends
         })
-        if(friends_list.indexOf(friend) === -1){
-            friends_list.push(friend)
-            await User.findOneAndUpdate({username},{friends: friends_list}).then(
+        if(friends_list.indexOf(username) === -1){
+            friends_list.push(username)
+            await User.findOneAndUpdate({username:friend},{friends: friends_list}).then(
                 res.status(200).json({'error':false})
             )
         }else{
@@ -78,15 +78,15 @@ user_controllers.delete_friend = async (req,res) => {
     const {friend} = req.params
     let friends_list
     if(friend){
-        await User.findOne({username}).then( data => {
+        await User.findOne({username:friend}).then( data => {
             friends_list = data.friends
         })
-        let i = friends_list.indexOf(friend)
+        let i = friends_list.indexOf(username)
         if( i === -1){
             res.status(400).json({error:true,message:'Este usuario no es tu amigo.'})
         }else{
             friends_list.splice(i,1)
-            await User.findOneAndUpdate({username},{friends: friends_list}).then(
+            await User.findOneAndUpdate({username:friend},{friends: friends_list}).then(
             res.status(200).json({error:false}))
         }
     }
