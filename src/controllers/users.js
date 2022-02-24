@@ -20,15 +20,15 @@ user_controllers.signToken = id => {
 
 // registrar usuario
 user_controllers.register = async (req, res) => {
-    const {username, password} = req.body
-    if(username == null || username =='' || password == null || password == ''){
+    const {username, password, fullname} = req.body
+    if(username == null || username =='' || password == null || password == '' || fullname == '' || fullname == null){
         res.status(400).json({error:true,message:'Complete todos los campos.'})
     }else{
         const IsUser = await User.findOne({username: username})
         if(IsUser){
             res.status(422).json({error:true,message:'Este usuario ya existe.'})
         }else{
-            const newUser = new User({username, password})
+            const newUser = new User({username, password, fullname})
             newUser.password = await bcrypt.EncryptPassword(password)
             await newUser.save();
             res.status(201).json({error:false,message:'Usuario creado exitosamente.'})
@@ -95,7 +95,7 @@ user_controllers.delete_friend = async (req,res) => {
 // datos del perfil
 user_controllers.set_perfil = async (req,res) => {
     const {username} = req.user
-    const {description} = req.body
+    const {description, fullname} = req.body
     const files = req.files
     if(!description){
         res.status(400).json({error:true,message:'Complete todos los campos.'})
@@ -104,7 +104,7 @@ user_controllers.set_perfil = async (req,res) => {
         if(files){
             photo = files[0].filename
         }
-        await User.findOneAndUpdate({username},{description,photo}).then(
+        await User.findOneAndUpdate({username},{description,photo,fullname}).then(
             res.status(200).json({error:false})
         )
     }
@@ -128,17 +128,16 @@ user_controllers.get_user = async (req,res) => {
     if(userData){
         const perfil = {
             username : userData.username,
+            fullname: userData.fullname,
             friends : userData.friends,
             photo: userData.photo,
             description: userData.description,
-            posts : postsData
+            posts : postsData.reverse()
         }
         res.status(200).json({error:false,perfil})
     }else{
         res.status(400).json({error:true,message:'Ocurrio un error al cargar el perfil.'})
-    }
-
-}
+    }}
 
 // verifica al usuario logueado
 user_controllers.isAuthenticated = (req,res) => {
@@ -148,14 +147,13 @@ user_controllers.isAuthenticated = (req,res) => {
     }else{
         res.status(204).end()
     }
-
 }
 
 // logout
 user_controllers.logout = (req, res) => {
     res.clearCookie('access_token');
     res.status(200).json(
-        { user: {username: '', password: '', description: '', photo: ''}, 
+        { user: {username: '',fullname:'', password: '', description: '', photo: ''}, 
         error: false });
 };
 

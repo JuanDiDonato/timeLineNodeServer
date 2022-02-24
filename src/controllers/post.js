@@ -9,7 +9,7 @@ const post_controllers = {}
 post_controllers.get_posts = async (req,res) => {
     const {username} = req.params
     const posts = await Post.find({username})
-    res.status(200).json({posts})
+    res.status(200).json(posts.reverse())
 }
 
 // crear post
